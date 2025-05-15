@@ -4,6 +4,12 @@ import { createClient } from "@supabase/supabase-js"
 export const getSupabaseClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase credentials")
+    throw new Error("Missing Supabase credentials")
+  }
+
   return createClient(supabaseUrl, supabaseAnonKey)
 }
 
@@ -11,19 +17,33 @@ export const getSupabaseClient = () => {
 export const uploadAvatar = async (file: File, userId: string): Promise<string | null> => {
   try {
     const supabase = getSupabaseClient()
-    const fileExt = file.name.split(".").pop()
-    const filePath = `${userId}/${Math.random().toString(36).substring(2, 15)}.${fileExt}`
 
-    const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file)
+    // Create avatars bucket if it doesn't exist
+    const { data: buckets } = await supabase.storage.listBuckets()
+    if (!buckets?.find((bucket) => bucket.name === "avatars")) {
+      await supabase.storage.createBucket("avatars", {
+        public: true,
+        fileSizeLimit: 5242880, // 5MB
+      })
+    }
+
+    const fileExt = file.name.split(".").pop()
+    const fileName = `${userId}/${Math.random().toString(36).substring(2, 15)}.${fileExt}`
+
+    const { error: uploadError, data } = await supabase.storage.from("avatars").upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: true,
+    })
 
     if (uploadError) {
+      console.error("Error uploading avatar:", uploadError)
       throw uploadError
     }
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath)
-    return data.publicUrl
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(fileName)
+    return urlData.publicUrl
   } catch (error) {
-    console.error("Error uploading avatar:", error)
+    console.error("Error in uploadAvatar:", error)
     return null
   }
 }
@@ -31,11 +51,24 @@ export const uploadAvatar = async (file: File, userId: string): Promise<string |
 // Get the avatar URL for a user
 export const getAvatarUrl = async (userId: string): Promise<string | null> => {
   try {
+    // First check if user has an avatar_url in their profile
     const supabase = getSupabaseClient()
+    const { data: profileData, error: profileError } = await supabase
+      .from("user_profiles")
+      .select("avatar_url")
+      .eq("id", userId)
+      .single()
+
+    if (profileData?.avatar_url) {
+      return profileData.avatar_url
+    }
+
+    // If no avatar_url in profile, check storage
     const { data, error } = await supabase.storage.from("avatars").list(userId + "/")
 
     if (error) {
-      throw error
+      console.error("Error listing avatars:", error)
+      return null
     }
 
     if (data && data.length > 0) {
@@ -49,7 +82,7 @@ export const getAvatarUrl = async (userId: string): Promise<string | null> => {
 
     return null
   } catch (error) {
-    console.error("Error getting avatar URL:", error)
+    console.error("Error in getAvatarUrl:", error)
     return null
   }
 }
@@ -58,18 +91,28 @@ export const getAvatarUrl = async (userId: string): Promise<string | null> => {
 export const deleteAvatar = async (avatarUrl: string, userId: string): Promise<boolean> => {
   try {
     const supabase = getSupabaseClient()
-    const path = avatarUrl.split("/").pop()
-    if (!path) return false
 
-    const { error } = await supabase.storage.from("avatars").remove([`${userId}/${path}`])
+    // Extract the file path from the URL
+    const urlParts = avatarUrl.split("/")
+    const bucketIndex = urlParts.findIndex((part) => part === "avatars")
+
+    if (bucketIndex === -1) {
+      console.error("Invalid avatar URL format")
+      return false
+    }
+
+    const filePath = urlParts.slice(bucketIndex + 1).join("/")
+
+    const { error } = await supabase.storage.from("avatars").remove([filePath])
 
     if (error) {
-      throw error
+      console.error("Error deleting avatar:", error)
+      return false
     }
 
     return true
   } catch (error) {
-    console.error("Error deleting avatar:", error)
+    console.error("Error in deleteAvatar:", error)
     return false
   }
 }

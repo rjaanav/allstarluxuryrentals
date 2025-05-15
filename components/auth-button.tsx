@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/lib/supabase-provider"
 import { useRouter } from "next/navigation"
-import { Loader2, LogIn, LogOut } from "lucide-react"
+import { Loader2, LogOut } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
 import { useToast } from "@/hooks/use-toast"
 
@@ -80,7 +80,6 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
       <>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={openSignIn} className={className}>
-            <LogIn className="h-4 w-4 mr-2" />
             Sign In
           </Button>
           <Button variant={variant} size="sm" onClick={openSignUp} className={className}>
@@ -95,7 +94,6 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
   return (
     <>
       <Button variant={variant} size="sm" onClick={openSignIn} className={className}>
-        <LogIn className="h-4 w-4 mr-2" />
         Sign In
       </Button>
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab={authModalTab} />

@@ -28,7 +28,7 @@ const fadeIn = {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, supabase, loading: authLoading } = useSupabase()
+  const { user, supabase } = useSupabase()
   const [isUpdating, setIsUpdating] = useState(false)
   const [profile, setProfile] = useState({
     full_name: "",
@@ -43,6 +43,12 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false)
   const [sessionTimeoutEnabled, setSessionTimeoutEnabled] = useState(false)
   const [sessionTimeout, setSessionTimeout] = useState(30) // minutes
+  const [formErrors, setFormErrors] = useState({
+    full_name: "",
+    phone_number: "",
+    driver_license_number: "",
+    driver_license_expiry: "",
+  })
 
   useEffect(() => {
     if (!user) return
@@ -53,7 +59,13 @@ export default function ProfilePage() {
         const { data, error } = await supabase.from("user_profiles").select("*").eq("id", user.id).single()
 
         if (error && error.code !== "PGRST116") {
-          throw error
+          console.error("Error fetching profile:", error)
+          toast({
+            title: "Error loading profile",
+            description: "We couldn't load your profile information. Please try again.",
+            variant: "destructive",
+          })
+          return
         }
 
         if (data) {
@@ -69,11 +81,23 @@ export default function ProfilePage() {
           })
           setAvatarUrl(data.avatar_url || user?.user_metadata?.avatar_url || null)
         } else {
-          // If no profile exists, use the avatar from auth metadata if available
+          // If no profile exists, create a new one with default values
+          const { error: insertError } = await supabase.from("user_profiles").insert({
+            id: user.id,
+            full_name: user?.user_metadata?.full_name || "",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+
+          if (insertError) {
+            console.error("Error creating profile:", insertError)
+          }
+
+          // Use auth metadata for avatar if available
           setAvatarUrl(user?.user_metadata?.avatar_url || null)
         }
       } catch (error) {
-        console.error("Error fetching profile:", error)
+        console.error("Error in profile fetch:", error)
         toast({
           title: "Error",
           description: "Failed to load profile data. Please try again.",
@@ -87,17 +111,63 @@ export default function ProfilePage() {
     fetchProfile()
   }, [user, supabase])
 
+  const validateForm = () => {
+    let valid = true
+    const errors = {
+      full_name: "",
+      phone_number: "",
+      driver_license_number: "",
+      driver_license_expiry: "",
+    }
+
+    // Validate phone number format if provided
+    if (profile.phone_number && !/^\+?[0-9\s\-()]{10,15}$/.test(profile.phone_number)) {
+      errors.phone_number = "Please enter a valid phone number"
+      valid = false
+    }
+
+    // Validate driver's license expiry date if provided
+    if (profile.driver_license_expiry) {
+      const expiryDate = new Date(profile.driver_license_expiry)
+      const today = new Date()
+      if (expiryDate < today) {
+        errors.driver_license_expiry = "Expiry date cannot be in the past"
+        valid = false
+      }
+    }
+
+    setFormErrors(errors)
+    return valid
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setProfile((prev) => ({
       ...prev,
       [name]: value,
     }))
+
+    // Clear error when field is edited
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }))
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!user) return
+
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please correct the errors in the form.",
+        variant: "destructive",
+      })
+      return
+    }
 
     setIsUpdating(true)
 
@@ -108,7 +178,7 @@ export default function ProfilePage() {
         phone_number: profile.phone_number,
         address: profile.address,
         driver_license_number: profile.driver_license_number,
-        driver_license_expiry: profile.driver_license_expiry,
+        driver_license_expiry: profile.driver_license_expiry || null,
         avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
       })
@@ -140,6 +210,18 @@ export default function ProfilePage() {
       }
 
       const file = event.target.files[0]
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error("File size must be less than 5MB")
+      }
+
+      // Validate file type
+      const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+      if (!validTypes.includes(file.type)) {
+        throw new Error("File must be an image (JPEG, PNG, GIF, or WEBP)")
+      }
+
       const newAvatarUrl = await uploadAvatar(file, user.id)
 
       if (!newAvatarUrl) {
@@ -165,7 +247,7 @@ export default function ProfilePage() {
       console.error("Error uploading avatar:", error)
       toast({
         title: "Error",
-        description: "Failed to upload avatar. Please try again.",
+        description: error.message || "Failed to upload avatar. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -229,12 +311,25 @@ export default function ProfilePage() {
 
   // Load session timeout preferences from localStorage
   useEffect(() => {
-    const timeoutEnabled = localStorage.getItem("sessionTimeoutEnabled") === "true"
-    const timeoutMinutes = Number.parseInt(localStorage.getItem("sessionTimeoutMinutes") || "30")
+    if (typeof window !== "undefined") {
+      const timeoutEnabled = localStorage.getItem("sessionTimeoutEnabled") === "true"
+      const timeoutMinutes = Number.parseInt(localStorage.getItem("sessionTimeoutMinutes") || "30")
 
-    setSessionTimeoutEnabled(timeoutEnabled)
-    setSessionTimeout(timeoutMinutes)
+      setSessionTimeoutEnabled(timeoutEnabled)
+      setSessionTimeout(timeoutMinutes)
+    }
   }, [])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-32 flex justify-center items-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your profile...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <AuthGuard>
@@ -274,7 +369,11 @@ export default function ProfilePage() {
                           htmlFor="avatar-upload"
                           className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer"
                         >
-                          <Camera className="h-4 w-4 text-white" />
+                          {uploading ? (
+                            <Loader2 className="h-4 w-4 text-white animate-spin" />
+                          ) : (
+                            <Camera className="h-4 w-4 text-white" />
+                          )}
                           <input
                             id="avatar-upload"
                             type="file"
@@ -323,6 +422,9 @@ export default function ProfilePage() {
                                 className="pl-10"
                                 placeholder="Enter your full name"
                               />
+                              {formErrors.full_name && (
+                                <p className="text-xs text-destructive mt-1">{formErrors.full_name}</p>
+                              )}
                             </div>
                           </div>
 
@@ -354,6 +456,9 @@ export default function ProfilePage() {
                                 className="pl-10"
                                 placeholder="Enter your phone number"
                               />
+                              {formErrors.phone_number && (
+                                <p className="text-xs text-destructive mt-1">{formErrors.phone_number}</p>
+                              )}
                             </div>
                           </div>
 
@@ -413,6 +518,9 @@ export default function ProfilePage() {
                                 className="pl-10"
                                 placeholder="Enter your license number"
                               />
+                              {formErrors.driver_license_number && (
+                                <p className="text-xs text-destructive mt-1">{formErrors.driver_license_number}</p>
+                              )}
                             </div>
                           </div>
 
@@ -428,6 +536,9 @@ export default function ProfilePage() {
                                 onChange={handleChange}
                                 className="pl-10"
                               />
+                              {formErrors.driver_license_expiry && (
+                                <p className="text-xs text-destructive mt-1">{formErrors.driver_license_expiry}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -482,9 +593,8 @@ export default function ProfilePage() {
                       <div className="space-y-6">
                         <div>
                           <h3 className="text-lg font-semibold mb-2">Password</h3>
-                          <p className="text-muted-foreground mb-4">
-                            You're using Google to sign in, so you don't need a password.
-                          </p>
+                          <p className="text-muted-foreground mb-4">Manage your account password for secure access.</p>
+                          <Button variant="outline">Change Password</Button>
                         </div>
 
                         <Separator />

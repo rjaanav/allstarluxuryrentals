@@ -58,7 +58,12 @@ export default function HowItWorksPage() {
               </Button>
             </div>
             <div className="relative h-48 w-48 overflow-hidden rounded-full md:h-64 md:w-64">
-              <Image src="/placeholder.svg?key=ij7qd" alt="Luxury Car Key" fill className="object-cover" />
+              <Image
+                src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=600&auto=format&fit=crop"
+                alt="Luxury Car Steering Wheel"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         </div>

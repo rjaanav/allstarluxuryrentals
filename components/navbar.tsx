@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { AuthButton } from "@/components/auth-button"
 import { useMobile } from "@/hooks/use-mobile"
+import { useSupabase } from "@/lib/supabase-provider"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -23,6 +24,7 @@ export function Navbar() {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const isMobile = useMobile()
+  const { user } = useSupabase()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -59,26 +61,30 @@ export function Navbar() {
                       {link.label}
                     </Link>
                   ))}
-                  <Link
-                    href="/profile"
-                    className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      pathname === "/profile" ? "text-primary" : "text-muted-foreground",
-                    )}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/bookings"
-                    className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      pathname === "/bookings" ? "text-primary" : "text-muted-foreground",
-                    )}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    My Bookings
-                  </Link>
+                  {user && (
+                    <>
+                      <Link
+                        href="/profile"
+                        className={cn(
+                          "text-sm font-medium transition-colors hover:text-primary",
+                          pathname === "/profile" ? "text-primary" : "text-muted-foreground",
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        href="/bookings"
+                        className={cn(
+                          "text-sm font-medium transition-colors hover:text-primary",
+                          pathname === "/bookings" ? "text-primary" : "text-muted-foreground",
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        My Bookings
+                      </Link>
+                    </>
+                  )}
                   <div className="pt-2">
                     <AuthButton className="w-full" />
                   </div>
@@ -107,24 +113,28 @@ export function Navbar() {
             </div>
 
             <div className="hidden md:flex md:items-center md:gap-2">
-              <Link
-                href="/profile"
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === "/profile" ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                Profile
-              </Link>
-              <Link
-                href="/bookings"
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === "/bookings" ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                My Bookings
-              </Link>
+              {user && (
+                <>
+                  <Link
+                    href="/profile"
+                    className={cn(
+                      "text-sm font-medium transition-colors hover:text-primary",
+                      pathname === "/profile" ? "text-primary" : "text-muted-foreground",
+                    )}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/bookings"
+                    className={cn(
+                      "text-sm font-medium transition-colors hover:text-primary",
+                      pathname === "/bookings" ? "text-primary" : "text-muted-foreground",
+                    )}
+                  >
+                    My Bookings
+                  </Link>
+                </>
+              )}
               <AuthButton />
               <ModeToggle />
             </div>

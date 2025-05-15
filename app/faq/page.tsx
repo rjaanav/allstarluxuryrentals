@@ -1,11 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { motion } from "framer-motion"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
 
 // Mock FAQ data
 const faqData = [
@@ -137,32 +133,6 @@ const faqData = [
 ]
 
 export default function FAQPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeCategory, setActiveCategory] = useState("all")
-
-  // Filter FAQs based on search term and active category
-  const filteredFAQs = faqData.flatMap((category) => {
-    const filteredItems = category.items.filter((item) => {
-      const matchesSearch =
-        searchTerm === "" ||
-        item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.answer.toLowerCase().includes(searchTerm.toLowerCase())
-
-      const matchesCategory = activeCategory === "all" || category.category === activeCategory
-
-      return matchesSearch && matchesCategory
-    })
-
-    return filteredItems.length > 0
-      ? [
-          {
-            category: category.category,
-            items: filteredItems,
-          },
-        ]
-      : []
-  })
-
   return (
     <div className="container mx-auto px-4 py-32">
       <motion.div
@@ -171,63 +141,27 @@ export default function FAQPage() {
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-3xl"
       >
-        <h1 className="mb-8 text-center text-4xl font-bold">Frequently Asked Questions</h1>
+        <h1 className="mb-12 text-center text-4xl font-bold">Frequently Asked Questions</h1>
 
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search for answers..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        {/* Display all FAQs grouped by category */}
+        {faqData.map((category, categoryIndex) => (
+          <div key={categoryIndex} className="mb-10">
+            <h2 className="mb-4 text-2xl font-semibold">{category.category}</h2>
+            <Accordion type="single" collapsible className="w-full mb-6">
+              {category.items.map((item, itemIndex) => (
+                <AccordionItem key={itemIndex} value={`item-${categoryIndex}-${itemIndex}`}>
+                  <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-muted-foreground">{item.answer}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
-        </div>
-
-        {/* Category Tabs */}
-        <Tabs defaultValue="all" value={activeCategory} onValueChange={setActiveCategory} className="mb-8">
-          <TabsList className="w-full overflow-x-auto">
-            <TabsTrigger value="all">All</TabsTrigger>
-            {faqData.map((category) => (
-              <TabsTrigger key={category.category} value={category.category}>
-                {category.category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        {/* FAQ Accordion */}
-        {filteredFAQs.length > 0 ? (
-          filteredFAQs.map((category, index) => (
-            <div key={index} className="mb-8">
-              {activeCategory === "all" && <h2 className="mb-4 text-2xl font-semibold">{category.category}</h2>}
-
-              <Accordion type="single" collapsible className="w-full">
-                {category.items.map((item, itemIndex) => (
-                  <AccordionItem key={itemIndex} value={`item-${index}-${itemIndex}`}>
-                    <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                    <AccordionContent>
-                      <p className="text-muted-foreground">{item.answer}</p>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-          ))
-        ) : (
-          <div className="rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
-            <h2 className="mb-4 text-xl font-semibold">No results found</h2>
-            <p className="text-muted-foreground">
-              We couldn't find any FAQs matching your search. Please try different keywords or browse by category.
-            </p>
-          </div>
-        )}
+        ))}
 
         {/* Contact Section */}
-        <div className="mt-12 rounded-lg border border-gray-200 p-6 text-center dark:border-gray-700">
+        <div className="mt-16 rounded-lg border border-gray-200 p-6 text-center dark:border-gray-700">
           <h2 className="mb-4 text-xl font-semibold">Still have questions?</h2>
           <p className="mb-6 text-muted-foreground">
             If you couldn't find the answer to your question, please feel free to contact our customer support team.

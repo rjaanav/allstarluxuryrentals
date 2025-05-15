@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Default Theme - Purple */
+  /* THEME OPTIONS */
+
+  /* Default Theme - Purple (Current) */
+  .theme-default {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -24,10 +26,102 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 263.4 70% 50.4%;
-    --radius: 0.75rem;
   }
 
-  .dark {
+  /* Luxury Theme - Gold & Black */
+  .theme-luxury {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 45 100% 50%;
+  }
+
+  /* Sport Theme - Red & Black */
+  .theme-sport {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 0 90% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 90% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 90% 50%;
+  }
+
+  /* Modern Theme - Blue & White */
+  .theme-modern {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+  }
+
+  /* Eco Theme - Green & White */
+  .theme-eco {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 100% 100%;
+    --secondary: 140 10% 95%;
+    --secondary-foreground: 142 76% 10%;
+    --muted: 140 10% 95%;
+    --muted-foreground: 142 10% 40%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 355 100% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 140 10% 90%;
+    --input: 140 10% 90%;
+    --ring: 142 76% 36%;
+  }
+
+  /* Dark mode versions for each theme */
+  .dark.theme-default {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -49,92 +143,103 @@
     --ring: 263.4 70% 50.4%;
   }
 
-  /* Luxury Theme - Gold & Black */
-  [data-theme="luxury"] {
-    --primary: 45 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 10%;
-    --accent: 45 100% 50%;
-    --accent-foreground: 0 0% 0%;
-    --ring: 45 100% 50%;
-  }
-
-  [data-theme="luxury"].dark {
+  .dark.theme-luxury {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
     --primary: 45 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
     --accent: 45 100% 50%;
     --accent-foreground: 0 0% 0%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
     --ring: 45 100% 50%;
   }
 
-  /* Sport Theme - Red & Black */
-  [data-theme="sport"] {
-    --primary: 0 90% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 10%;
-    --accent: 0 90% 50%;
-    --accent-foreground: 0 0% 100%;
-    --ring: 0 90% 50%;
-  }
-
-  [data-theme="sport"].dark {
+  .dark.theme-sport {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
     --primary: 0 90% 50%;
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
     --accent: 0 90% 50%;
     --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
     --ring: 0 90% 50%;
   }
 
-  /* Modern Theme - Blue & White */
-  [data-theme="modern"] {
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
-    --ring: 221 83% 53%;
-  }
-
-  [data-theme="modern"].dark {
+  .dark.theme-modern {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
     --accent: 217 32% 17%;
     --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
     --ring: 224 76% 48%;
   }
 
-  /* Eco Theme - Green & White */
-  [data-theme="eco"] {
-    --primary: 142 76% 36%;
-    --primary-foreground: 355 100% 100%;
-    --secondary: 140 10% 95%;
-    --secondary-foreground: 142 76% 10%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 355 100% 100%;
-    --ring: 142 76% 36%;
-  }
-
-  [data-theme="eco"].dark {
+  .dark.theme-eco {
+    --background: 20 14% 4%;
+    --foreground: 0 0% 98%;
+    --card: 20 14% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 20 14% 4%;
+    --popover-foreground: 0 0% 98%;
     --primary: 142 70% 40%;
     --primary-foreground: 355 100% 100%;
     --secondary: 142 5% 15%;
     --secondary-foreground: 0 0% 98%;
+    --muted: 142 5% 15%;
+    --muted-foreground: 142 5% 65%;
     --accent: 142 70% 40%;
     --accent-foreground: 355 100% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 142 5% 20%;
+    --input: 142 5% 20%;
     --ring: 142 70% 40%;
   }
-}
 
-@layer base {
+  /* Set default theme */
+  :root {
+    --radius: 0.75rem;
+  }
+
+  /* Apply default theme */
+  body {
+    @apply theme-default;
+  }
   * {
     @apply border-border;
   }

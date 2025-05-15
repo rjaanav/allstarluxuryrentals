@@ -16,55 +16,39 @@ type ThemeOption = {
   name: string
   value: string
   label: string
-  color: string
 }
 
 const themes: ThemeOption[] = [
-  {
-    name: "Default",
-    value: "default",
-    label: "Purple (Default)",
-    color: "bg-[hsl(263.4,70%,50.4%)]",
-  },
-  {
-    name: "Luxury",
-    value: "luxury",
-    label: "Gold & Black",
-    color: "bg-[hsl(45,100%,50%)]",
-  },
-  {
-    name: "Sport",
-    value: "sport",
-    label: "Red & Black",
-    color: "bg-[hsl(0,90%,50%)]",
-  },
-  {
-    name: "Modern",
-    value: "modern",
-    label: "Blue & White",
-    color: "bg-[hsl(221,83%,53%)]",
-  },
-  {
-    name: "Eco",
-    value: "eco",
-    label: "Green & White",
-    color: "bg-[hsl(142,76%,36%)]",
-  },
+  { name: "Default", value: "theme-default", label: "Purple (Default)" },
+  { name: "Luxury", value: "theme-luxury", label: "Gold & Black" },
+  { name: "Sport", value: "theme-sport", label: "Red & Black" },
+  { name: "Modern", value: "theme-modern", label: "Blue & White" },
+  { name: "Eco", value: "theme-eco", label: "Green & White" },
 ]
 
 export function ThemeSwitcher() {
-  const [currentTheme, setCurrentTheme] = useState<string>("default")
+  const [currentTheme, setCurrentTheme] = useState<string>("theme-default")
 
   useEffect(() => {
     // Get saved theme from localStorage or use default
-    const savedTheme = localStorage.getItem("allstar-color-theme") || "default"
+    const savedTheme = localStorage.getItem("allstar-theme") || "theme-default"
     setCurrentTheme(savedTheme)
-    document.documentElement.setAttribute("data-theme", savedTheme)
+    applyTheme(savedTheme)
   }, [])
 
-  const changeTheme = (theme: string) => {
-    document.documentElement.setAttribute("data-theme", theme)
-    localStorage.setItem("allstar-color-theme", theme)
+  const applyTheme = (theme: string) => {
+    // Remove all theme classes
+    document.body.classList.forEach((className) => {
+      if (className.startsWith("theme-")) {
+        document.body.classList.remove(className)
+      }
+    })
+
+    // Add new theme class
+    document.body.classList.add(theme)
+
+    // Save to localStorage
+    localStorage.setItem("allstar-theme", theme)
     setCurrentTheme(theme)
   }
 
@@ -82,13 +66,10 @@ export function ThemeSwitcher() {
         {themes.map((theme) => (
           <DropdownMenuItem
             key={theme.value}
-            onClick={() => changeTheme(theme.value)}
+            onClick={() => applyTheme(theme.value)}
             className="flex items-center justify-between"
           >
-            <div className="flex items-center gap-2">
-              <div className={`w-4 h-4 rounded-full ${theme.color}`}></div>
-              {theme.label}
-            </div>
+            {theme.label}
             {currentTheme === theme.value && <Check className="h-4 w-4 ml-2" />}
           </DropdownMenuItem>
         ))}

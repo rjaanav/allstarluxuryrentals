@@ -1,13 +1,16 @@
 "use client"
 
 import type React from "react"
+
 import { createContext, useContext, useEffect, useState } from "react"
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
+import type { Session, User } from "@supabase/supabase-js"
 
 // Define the type for the Supabase context
 type SupabaseContext = {
   supabase: SupabaseClient
-  user: any | null
+  user: User | null
+  session: Session | null
   loading: boolean
 }
 
@@ -21,46 +24,74 @@ export default function SupabaseProvider({
   children: React.ReactNode
 }) {
   // Get the Supabase URL and anon key from environment variables
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   // Create the Supabase client
-  const [supabase] = useState(() => createClient(supabaseUrl, supabaseAnonKey))
-  const [user, setUser] = useState<any | null>(null)
+  const [supabase] = useState(() => {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error("Missing Supabase environment variables")
+      return createClient("https://example.com", "dummy-key") // Return a dummy client to avoid errors
+    }
+    return createClient(supabaseUrl, supabaseAnonKey)
+  })
+
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Set up the auth state listener
   useEffect(() => {
-    const getUser = async () => {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      setLoading(false)
+      return
+    }
+
+    const getSession = async () => {
       try {
-        const { data } = await supabase.auth.getUser()
-        setUser(data.user)
+        setLoading(true)
+
+        // Get the current session
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession()
+
+        if (error) {
+          throw error
+        }
+
+        setSession(session)
+        setUser(session?.user || null)
       } catch (error) {
-        console.error("Error getting user:", error)
+        console.error("Error getting session:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    getUser()
+    // Initial session fetch
+    getSession()
 
     // Set up auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event)
+      setSession(session)
       setUser(session?.user || null)
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase])
+  }, [supabase, supabaseAnonKey, supabaseUrl])
 
   return (
     <Context.Provider
       value={{
         supabase,
         user,
+        session,
         loading,
       }}
     >

@@ -1,13 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/lib/supabase-provider"
-import { Loader2, LogIn, LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-export function AuthButton({ className }: { className?: string }) {
-  const { user, supabase, loading } = useSupabase()
+export function AuthButton() {
+  const { supabase, user } = useSupabase()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -22,6 +21,7 @@ export function AuthButton({ className }: { className?: string }) {
       })
     } catch (error) {
       console.error("Error signing in:", error)
+    } finally {
       setIsLoading(false)
     }
   }
@@ -30,7 +30,7 @@ export function AuthButton({ className }: { className?: string }) {
     try {
       setIsLoading(true)
       await supabase.auth.signOut()
-      router.push("/")
+      router.refresh()
     } catch (error) {
       console.error("Error signing out:", error)
     } finally {
@@ -38,28 +38,9 @@ export function AuthButton({ className }: { className?: string }) {
     }
   }
 
-  if (loading) {
-    return (
-      <Button variant="ghost" size="sm" disabled className={className}>
-        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-        Loading...
-      </Button>
-    )
-  }
-
-  if (user) {
-    return (
-      <Button variant="ghost" size="sm" onClick={handleSignOut} disabled={isLoading} className={className}>
-        {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <LogOut className="h-4 w-4 mr-2" />}
-        Sign Out
-      </Button>
-    )
-  }
-
   return (
-    <Button variant="default" size="sm" onClick={handleSignIn} disabled={isLoading} className={className}>
-      {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <LogIn className="h-4 w-4 mr-2" />}
-      Sign In
+    <Button variant={user ? "outline" : "default"} onClick={user ? handleSignOut : handleSignIn} disabled={isLoading}>
+      {isLoading ? "Loading..." : user ? "Sign Out" : "Sign In"}
     </Button>
   )
 }

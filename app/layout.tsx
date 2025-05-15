@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/navbar"
@@ -9,6 +9,7 @@ import { ToastProvider } from "@/components/toast-provider"
 import SupabaseProvider from "@/lib/supabase-provider"
 import { SessionManager } from "@/components/session-manager"
 import { AnimatedBackgroundWrapper } from "@/components/animated-background-wrapper"
+import { ThemeInitializer } from "@/components/theme-initializer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,6 +19,13 @@ export const metadata: Metadata = {
     generator: 'v0.dev'
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "#020817" },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,6 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <ThemeInitializer />
       <body className={inter.className}>
         <SupabaseProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

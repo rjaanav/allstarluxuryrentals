@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    /* Default Theme - Purple */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -46,6 +47,90 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 263.4 70% 50.4%;
+  }
+
+  /* Luxury Theme - Gold & Black */
+  [data-theme="luxury"] {
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 10%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --ring: 45 100% 50%;
+  }
+
+  [data-theme="luxury"].dark {
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --ring: 45 100% 50%;
+  }
+
+  /* Sport Theme - Red & Black */
+  [data-theme="sport"] {
+    --primary: 0 90% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 10%;
+    --accent: 0 90% 50%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 0 90% 50%;
+  }
+
+  [data-theme="sport"].dark {
+    --primary: 0 90% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 0 90% 50%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 0 90% 50%;
+  }
+
+  /* Modern Theme - Blue & White */
+  [data-theme="modern"] {
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+    --ring: 221 83% 53%;
+  }
+
+  [data-theme="modern"].dark {
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 217 32% 17%;
+    --accent-foreground: 210 40% 98%;
+    --ring: 224 76% 48%;
+  }
+
+  /* Eco Theme - Green & White */
+  [data-theme="eco"] {
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 100% 100%;
+    --secondary: 140 10% 95%;
+    --secondary-foreground: 142 76% 10%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 355 100% 100%;
+    --ring: 142 76% 36%;
+  }
+
+  [data-theme="eco"].dark {
+    --primary: 142 70% 40%;
+    --primary-foreground: 355 100% 100%;
+    --secondary: 142 5% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 142 70% 40%;
+    --accent-foreground: 355 100% 100%;
+    --ring: 142 70% 40%;
   }
 }
 

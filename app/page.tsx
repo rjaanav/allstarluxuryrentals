@@ -69,7 +69,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible" variants={fadeIn} className="space-y-6">
               <Badge variant="outline" className="px-3 py-1 text-sm rounded-full border-primary/50">
-                #DriveInStyle
+                DriveInStyle
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
                 Rent Your Dream Car <span className="gradient-text">Today</span>
@@ -136,7 +136,7 @@ export default function Home() {
                   <Car className="h-8 w-8 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Premium Selection</p>
-                    <p className="text-xs text-muted-foreground">100+ Luxury Cars</p>
+                    <p className="text-xs text-muted-foreground">20+ Luxury Cars</p>
                   </div>
                 </div>
               </div>
@@ -154,6 +154,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Rest of the component remains unchanged */}
       {/* Search Section */}
       <section className="py-12 bg-muted/50">
         <div className="container mx-auto px-4">

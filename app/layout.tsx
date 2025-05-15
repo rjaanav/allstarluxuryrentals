@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ToastProvider } from "@/components/toast-provider"
 import SupabaseProvider from "@/lib/supabase-provider"
+import { SessionManager } from "@/components/session-manager"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <SupabaseProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToastProvider>
+              <SessionManager />
               <div className="flex min-h-screen flex-col">
                 <Navbar />
                 <main className="flex-1">{children}</main>

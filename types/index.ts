@@ -4,12 +4,12 @@ export interface Car {
   brand: string
   model: string
   year: number
-  daily_rate: number // Changed from price_per_day to match schema
+  daily_rate: number
   description: string
-  features: string[] | Record<string, any> // Could be JSON in the database
+  features: Record<string, any> // JSONB in the database
   category: string
-  image_url: string // Changed from image_urls array to match schema
-  is_available: boolean // Changed from available to match schema
+  image_url: string
+  is_available: boolean
   created_at: string
   updated_at: string
 }
@@ -20,7 +20,7 @@ export interface Booking {
   car_id: string
   start_date: string
   end_date: string
-  total_amount: number // Changed from total_price to match schema
+  total_amount: number
   status: "pending" | "confirmed" | "cancelled" | "completed"
   payment_intent_id?: string
   created_at: string
@@ -50,6 +50,13 @@ export interface UserProfile {
   updated_at: string
 }
 
+export interface FAQ {
+  id: number
+  question: string
+  answer: string
+  category: string
+}
+
 export interface Promotion {
   id: string // UUID in the database
   code: string
@@ -57,13 +64,6 @@ export interface Promotion {
   discount_percentage: number
   valid_from: string
   valid_to: string
-  is_active: boolean // Changed from active to match schema
+  is_active: boolean
   created_at: string
-}
-
-export interface FAQ {
-  id: number
-  question: string
-  answer: string
-  category: string
 }

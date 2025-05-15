@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useEffect, useState } from "react"
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { Session, User } from "@supabase/supabase-js"
@@ -39,6 +38,25 @@ export default function SupabaseProvider({
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Handle hash fragment authentication (for OAuth redirects)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Check if we have a hash fragment with an access token
+      const hasHashFragment = window.location.hash && window.location.hash.includes("access_token")
+
+      if (hasHashFragment) {
+        // Let Supabase handle the hash fragment
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          setSession(session)
+          setUser(session?.user || null)
+
+          // Remove the hash fragment from the URL
+          window.history.replaceState(null, "", window.location.pathname + window.location.search)
+        })
+      }
+    }
+  }, [supabase])
 
   useEffect(() => {
     if (!supabaseUrl || !supabaseAnonKey) {

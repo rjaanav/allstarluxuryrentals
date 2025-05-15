@@ -13,6 +13,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Car, Filter, Search, Star, Fuel, Users, Gauge, Sliders, Zap } from "lucide-react"
+import { useMobile } from "@/hooks/use-mobile"
 
 // Animation variants
 const fadeIn = {
@@ -34,16 +35,41 @@ const staggerContainer = {
   },
 }
 
-export default function CarsPage() {
+export default function FleetPage() {
   const { cars, loading, error, fetchCars, getCarCategories, getCarBrands } = useCars()
+  const { isMobile } = useMobile()
   const [filteredCars, setFilteredCars] = useState(cars)
   const [searchTerm, setSearchTerm] = useState("")
   const [priceRange, setPriceRange] = useState([0, 1500])
   const [selectedCategory, setSelectedCategory] = useState("")
   const [selectedBrand, setSelectedBrand] = useState("")
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(!isMobile) // Show filters by default on desktop
   const [categories, setCategories] = useState<string[]>([])
   const [brands, setBrands] = useState<string[]>([])
+
+  // Get appropriate image URL for specific cars
+  const getCarImageUrl = (car: any) => {
+    // Return specific image URLs for the listed cars
+    if (car.brand === "Audi" && car.model === "e-tron GT") {
+      return "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?w=800&auto=format&fit=crop"
+    } else if (car.brand === "Range Rover" && car.model === "Sport") {
+      return "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&auto=format&fit=crop"
+    } else if (car.brand === "Lamborghini" && car.model === "Huracan") {
+      return "https://images.unsplash.com/photo-1636866120504-81110da6e04f?w=800&auto=format&fit=crop"
+    } else if (car.brand === "Maserati" && car.model === "MC20") {
+      return "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&auto=format&fit=crop"
+    } else if (car.brand === "Rolls Royce" && car.model === "Ghost") {
+      return "https://images.unsplash.com/photo-1631295868223-63265b40d9cc?w=800&auto=format&fit=crop"
+    }
+
+    // Default to the car's image_url or a generic placeholder
+    return car.image_url || "/placeholder.svg?height=300&width=500&text=" + encodeURIComponent(car.name)
+  }
+
+  // Update showFilters when isMobile changes
+  useEffect(() => {
+    setShowFilters(!isMobile)
+  }, [isMobile])
 
   // Fetch categories and brands on mount
   useEffect(() => {
@@ -111,23 +137,26 @@ export default function CarsPage() {
           <h1 className="text-3xl font-bold mb-2">Our Luxury Fleet</h1>
           <p className="text-muted-foreground">Discover and book from our collection of premium vehicles</p>
         </div>
-        <Button
-          variant="outline"
-          className="mt-4 md:mt-0 flex items-center"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <Filter className="mr-2 h-4 w-4" />
-          Filters
-          <Badge className="ml-2" variant="secondary">
-            {filteredCars.length}
-          </Badge>
-        </Button>
+        {/* Only show the filters toggle button on mobile */}
+        {isMobile && (
+          <Button
+            variant="outline"
+            className="mt-4 md:mt-0 flex items-center"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="mr-2 h-4 w-4" />
+            Filters
+            <Badge className="ml-2" variant="secondary">
+              {filteredCars.length}
+            </Badge>
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Filters Section */}
+        {/* Filters Section - Always visible on desktop, toggleable on mobile */}
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
+          initial={{ opacity: isMobile ? 0 : 1, height: isMobile ? 0 : "auto" }}
           animate={{
             opacity: showFilters ? 1 : 0,
             height: showFilters ? "auto" : 0,
@@ -290,9 +319,7 @@ export default function CarsPage() {
                   <Card className="overflow-hidden h-full border-0 shadow-lg">
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
-                        src={
-                          car.image_url || "/placeholder.svg?height=300&width=500&text=" + encodeURIComponent(car.name)
-                        }
+                        src={getCarImageUrl(car) || "/placeholder.svg"}
                         alt={car.name}
                         fill
                         className="object-cover transition-transform hover:scale-105"
@@ -364,7 +391,7 @@ export default function CarsPage() {
                         <span className="text-muted-foreground text-sm">/day</span>
                       </div>
                       <Button asChild>
-                        <Link href={`/cars/${car.id}`}>Book Now</Link>
+                        <Link href={`/fleet/${car.id}`}>Book Now</Link>
                       </Button>
                     </CardFooter>
                   </Card>

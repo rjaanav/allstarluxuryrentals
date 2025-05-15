@@ -12,9 +12,8 @@ import { useMobile } from "@/hooks/use-mobile"
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/cars", label: "Cars" },
+  { href: "/fleet", label: "Fleet" },
   { href: "/how-it-works", label: "How It Works" },
-  { href: "/promotions", label: "Promotions" },
   { href: "/reviews", label: "Reviews" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },

@@ -10,6 +10,12 @@ export async function GET(request: NextRequest) {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get("code")
 
+    // Get the origin based on the environment
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://allstarluxuryrentals-jaanavs-projects.vercel.app" ||
+      requestUrl.origin
+
     if (code) {
       const cookieStore = cookies()
       const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
@@ -19,14 +25,18 @@ export async function GET(request: NextRequest) {
 
       if (error) {
         console.error("Error exchanging code for session:", error)
-        return NextResponse.redirect(`${requestUrl.origin}/auth-error?error=${encodeURIComponent(error.message)}`)
+        return NextResponse.redirect(`${origin}/auth-error?error=${encodeURIComponent(error.message)}`)
       }
     }
 
     // Redirect to the home page after successful authentication
-    return NextResponse.redirect(requestUrl.origin)
+    return NextResponse.redirect(origin)
   } catch (error) {
     console.error("Unexpected error in auth callback:", error)
-    return NextResponse.redirect(new URL("/auth-error", request.url))
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://allstarluxuryrentals-jaanavs-projects.vercel.app" ||
+      new URL(request.url).origin
+    return NextResponse.redirect(`${origin}/auth-error`)
   }
 }

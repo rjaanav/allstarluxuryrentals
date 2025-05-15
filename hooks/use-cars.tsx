@@ -34,19 +34,19 @@ export function useCars() {
         }
 
         if (filters.minPrice !== undefined) {
-          query = query.gte("price_per_day", filters.minPrice)
+          query = query.gte("daily_rate", filters.minPrice)
         }
 
         if (filters.maxPrice !== undefined) {
-          query = query.lte("price_per_day", filters.maxPrice)
+          query = query.lte("daily_rate", filters.maxPrice)
         }
 
         if (filters.available !== undefined) {
-          query = query.eq("available", filters.available)
+          query = query.eq("is_available", filters.available)
         }
       }
 
-      const { data, error } = await query.order("price_per_day", { ascending: true })
+      const { data, error } = await query.order("daily_rate", { ascending: true })
 
       if (error) {
         throw error
@@ -61,7 +61,28 @@ export function useCars() {
     }
   }
 
-  const getCarById = async (id: number): Promise<Car | null> => {
+  const getFeaturedCars = async (limit = 4): Promise<Car[]> => {
+    try {
+      // Get cars with is_available = true, ordered by daily_rate descending (premium cars first)
+      const { data, error } = await supabase
+        .from("cars")
+        .select("*")
+        .eq("is_available", true)
+        .order("daily_rate", { ascending: false })
+        .limit(limit)
+
+      if (error) {
+        throw error
+      }
+
+      return data || []
+    } catch (err) {
+      console.error("Error fetching featured cars:", err)
+      return []
+    }
+  }
+
+  const getCarById = async (id: string): Promise<Car | null> => {
     try {
       const { data, error } = await supabase.from("cars").select("*").eq("id", id).single()
 
@@ -120,6 +141,7 @@ export function useCars() {
     loading,
     error,
     fetchCars,
+    getFeaturedCars,
     getCarById,
     getCarCategories,
     getCarBrands,

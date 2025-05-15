@@ -49,19 +49,6 @@ export default function FleetPage() {
 
   // Get appropriate image URL for specific cars
   const getCarImageUrl = (car: any) => {
-    // Return specific image URLs for the listed cars
-    if (car.brand === "Audi" && car.model === "e-tron GT") {
-      return "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?w=800&auto=format&fit=crop"
-    } else if (car.brand === "Range Rover" && car.model === "Sport") {
-      return "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&auto=format&fit=crop"
-    } else if (car.brand === "Lamborghini" && car.model === "Huracan") {
-      return "https://images.unsplash.com/photo-1636866120504-81110da6e04f?w=800&auto=format&fit=crop"
-    } else if (car.brand === "Maserati" && car.model === "MC20") {
-      return "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&auto=format&fit=crop"
-    } else if (car.brand === "Rolls Royce" && car.model === "Ghost") {
-      return "https://images.unsplash.com/photo-1631295868223-63265b40d9cc?w=800&auto=format&fit=crop"
-    }
-
     // Default to the car's image_url or a generic placeholder
     return car.image_url || "/placeholder.svg?height=300&width=500&text=" + encodeURIComponent(car.name)
   }

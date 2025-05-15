@@ -41,7 +41,7 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
     if (car.brand === "Audi" && car.model === "e-tron GT") {
       return "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?w=1200&auto=format&fit=crop"
     } else if (car.brand === "Range Rover" && car.model === "Sport") {
-      return "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1200&auto=format&fit=crop"
+      return "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&auto=format&fit=crop"
     } else if (car.brand === "Lamborghini" && car.model === "Huracan") {
       return "https://images.unsplash.com/photo-1636866120504-81110da6e04f?w=1200&auto=format&fit=crop"
     } else if (car.brand === "Maserati" && car.model === "MC20") {

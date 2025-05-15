@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { ToastProvider } from "@/components/toast-provider"
 import SupabaseProvider from "@/lib/supabase-provider"
 import { SessionManager } from "@/components/session-manager"
+import { BackgroundAnimation } from "@/components/background-animation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -34,6 +35,7 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
                 <Footer />
               </div>
+              <BackgroundAnimation />
             </ToastProvider>
           </ThemeProvider>
         </SupabaseProvider>

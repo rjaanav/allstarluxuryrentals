@@ -12,7 +12,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/components/ui/use-toast"
-import { User, Car, CreditCard, LogOut, Mail, Phone, MapPin, Calendar, Loader2, Camera } from "lucide-react"
+import {
+  User,
+  Car,
+  CreditCard,
+  LogOut,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Loader2,
+  Camera,
+  AlertCircle,
+} from "lucide-react"
 import { AuthGuard } from "@/components/auth-guard"
 import { uploadAvatar } from "@/lib/avatar-utils"
 
@@ -39,6 +51,7 @@ export default function ProfilePage() {
     avatar_url: "",
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [sessionTimeoutEnabled, setSessionTimeoutEnabled] = useState(false)
@@ -49,26 +62,64 @@ export default function ProfilePage() {
     driver_license_number: "",
     driver_license_expiry: "",
   })
+  const [debugInfo, setDebugInfo] = useState({
+    hasUser: false,
+    userId: "",
+    profileFetched: false,
+    profileData: null,
+  })
 
   useEffect(() => {
-    if (!user) return
+    // Update debug info
+    setDebugInfo((prev) => ({
+      ...prev,
+      hasUser: Boolean(user),
+      userId: user?.id || "",
+    }))
+
+    if (!user) {
+      console.log("Profile page: No user found")
+      setLoading(false)
+      return
+    }
+
+    console.log("Profile page: User found, fetching profile", user.id)
 
     const fetchProfile = async () => {
       try {
         setLoading(true)
-        const { data, error } = await supabase.from("user_profiles").select("*").eq("id", user.id).single()
+        setError(null)
 
-        if (error && error.code !== "PGRST116") {
-          console.error("Error fetching profile:", error)
-          toast({
-            title: "Error loading profile",
-            description: "We couldn't load your profile information. Please try again.",
-            variant: "destructive",
-          })
-          return
+        // Check if user_profiles table exists
+        const { data: tableExists, error: tableCheckError } = await supabase.from("user_profiles").select("id").limit(1)
+
+        if (tableCheckError) {
+          console.error("Error checking user_profiles table:", tableCheckError)
+          throw new Error("Could not verify database tables. Please ensure the database is set up correctly.")
         }
 
-        if (data) {
+        // Fetch user profile
+        const { data, error } = await supabase.from("user_profiles").select("*").eq("id", user.id).single()
+
+        // Update debug info
+        setDebugInfo((prev) => ({
+          ...prev,
+          profileFetched: true,
+          profileData: data || null,
+        }))
+
+        if (error) {
+          console.error("Error fetching profile:", error)
+
+          // If the error is that the record was not found, create a new profile
+          if (error.code === "PGRST116") {
+            console.log("Profile not found, creating new profile")
+            await createNewProfile()
+          } else {
+            throw error
+          }
+        } else if (data) {
+          console.log("Profile found:", data)
           setProfile({
             full_name: data.full_name || "",
             phone_number: data.phone_number || "",
@@ -81,30 +132,60 @@ export default function ProfilePage() {
           })
           setAvatarUrl(data.avatar_url || user?.user_metadata?.avatar_url || null)
         } else {
-          // If no profile exists, create a new one with default values
-          const { error: insertError } = await supabase.from("user_profiles").insert({
+          // No data and no error means we need to create a profile
+          console.log("No profile found, creating new profile")
+          await createNewProfile()
+        }
+      } catch (err) {
+        console.error("Error in profile fetch:", err)
+        setError(err.message || "Failed to load profile data")
+        toast({
+          title: "Error",
+          description: err.message || "Failed to load profile data. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const createNewProfile = async () => {
+      try {
+        // Create a new profile with default values
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .insert({
             id: user.id,
             full_name: user?.user_metadata?.full_name || "",
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
+          .select()
 
-          if (insertError) {
-            console.error("Error creating profile:", insertError)
-          }
-
-          // Use auth metadata for avatar if available
-          setAvatarUrl(user?.user_metadata?.avatar_url || null)
+        if (error) {
+          console.error("Error creating profile:", error)
+          throw error
         }
-      } catch (error) {
-        console.error("Error in profile fetch:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load profile data. Please try again.",
-          variant: "destructive",
-        })
-      } finally {
-        setLoading(false)
+
+        if (data && data.length > 0) {
+          console.log("New profile created:", data[0])
+          setProfile({
+            full_name: data[0].full_name || "",
+            phone_number: data[0].phone_number || "",
+            address: data[0].address || "",
+            driver_license_number: data[0].driver_license_number || "",
+            driver_license_expiry: data[0].driver_license_expiry
+              ? new Date(data[0].driver_license_expiry).toISOString().split("T")[0]
+              : "",
+            avatar_url: data[0].avatar_url || "",
+          })
+        }
+
+        // Use auth metadata for avatar if available
+        setAvatarUrl(user?.user_metadata?.avatar_url || null)
+      } catch (err) {
+        console.error("Error creating profile:", err)
+        throw err
       }
     }
 
@@ -320,12 +401,55 @@ export default function ProfilePage() {
     }
   }, [])
 
+  // Show loading state
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-32 flex justify-center items-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading your profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-32 flex justify-center items-center">
+        <div className="text-center">
+          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Error Loading Profile</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 text-left text-xs bg-muted p-4 rounded-md">
+              <p>Debug Info:</p>
+              <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // If no user, show a message (this shouldn't happen due to AuthGuard)
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-32 flex justify-center items-center">
+        <div className="text-center">
+          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Authentication Required</h2>
+          <p className="text-muted-foreground mb-4">You need to be signed in to view your profile.</p>
+          <Button onClick={() => router.push("/")}>Go to Sign In</Button>
+
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 text-left text-xs bg-muted p-4 rounded-md">
+              <p>Debug Info:</p>
+              <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -496,7 +620,9 @@ export default function ProfilePage() {
                 </motion.div>
               </TabsContent>
 
+              {/* Other tabs content remains the same */}
               <TabsContent value="license" className="mt-0">
+                {/* License tab content */}
                 <motion.div initial="hidden" animate="visible" variants={fadeIn}>
                   <Card>
                     <CardHeader>
@@ -562,6 +688,7 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="payment" className="mt-0">
+                {/* Payment tab content */}
                 <motion.div initial="hidden" animate="visible" variants={fadeIn}>
                   <Card>
                     <CardHeader>
@@ -583,6 +710,7 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="security" className="mt-0">
+                {/* Security tab content */}
                 <motion.div initial="hidden" animate="visible" variants={fadeIn}>
                   <Card>
                     <CardHeader>
@@ -650,6 +778,14 @@ export default function ProfilePage() {
             </div>
           </div>
         </Tabs>
+
+        {/* Debug info in development */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="mt-8 text-xs bg-muted p-4 rounded-md">
+            <p>Debug Info:</p>
+            <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </AuthGuard>
   )

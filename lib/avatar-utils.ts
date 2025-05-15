@@ -18,13 +18,31 @@ export const uploadAvatar = async (file: File, userId: string): Promise<string |
   try {
     const supabase = getSupabaseClient()
 
-    // Create avatars bucket if it doesn't exist
-    const { data: buckets } = await supabase.storage.listBuckets()
-    if (!buckets?.find((bucket) => bucket.name === "avatars")) {
-      await supabase.storage.createBucket("avatars", {
-        public: true,
-        fileSizeLimit: 5242880, // 5MB
-      })
+    // Check if storage is available
+    try {
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+
+      if (bucketsError) {
+        console.error("Error listing buckets:", bucketsError)
+        throw new Error("Storage is not available. Please check your Supabase configuration.")
+      }
+
+      // Create avatars bucket if it doesn't exist
+      if (!buckets?.find((bucket) => bucket.name === "avatars")) {
+        const { error: createBucketError } = await supabase.storage.createBucket("avatars", {
+          public: true,
+          fileSizeLimit: 5242880, // 5MB
+        })
+
+        if (createBucketError) {
+          console.error("Error creating avatars bucket:", createBucketError)
+          throw new Error("Could not create storage bucket. Please check your Supabase configuration.")
+        }
+      }
+    } catch (error) {
+      console.error("Error checking/creating bucket:", error)
+      // If we can't create a bucket, try to use a data URL instead
+      return URL.createObjectURL(file)
     }
 
     const fileExt = file.name.split(".").pop()
@@ -37,14 +55,20 @@ export const uploadAvatar = async (file: File, userId: string): Promise<string |
 
     if (uploadError) {
       console.error("Error uploading avatar:", uploadError)
-      throw uploadError
+      // If upload fails, try to use a data URL instead
+      return URL.createObjectURL(file)
     }
 
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(fileName)
     return urlData.publicUrl
   } catch (error) {
     console.error("Error in uploadAvatar:", error)
-    return null
+    // As a last resort, try to use a data URL
+    try {
+      return URL.createObjectURL(file)
+    } catch {
+      return null
+    }
   }
 }
 

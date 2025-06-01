@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Check, Palette } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ const themes: ThemeOption[] = [
 
 export function ThemeSwitcher() {
   const [currentTheme, setCurrentTheme] = useState<string>("theme-default")
+  const { theme } = useTheme()
 
   useEffect(() => {
     // Get saved theme from localStorage or use default
@@ -37,7 +39,10 @@ export function ThemeSwitcher() {
   }, [])
 
   const applyTheme = (theme: string) => {
-    // Remove all theme classes
+    // Store current dark mode state
+    const isDark = document.documentElement.classList.contains("dark")
+    
+    // Remove only theme- prefixed classes
     document.body.classList.forEach((className) => {
       if (className.startsWith("theme-")) {
         document.body.classList.remove(className)
@@ -46,6 +51,11 @@ export function ThemeSwitcher() {
 
     // Add new theme class
     document.body.classList.add(theme)
+
+    // Restore dark mode class if it was active
+    if (isDark) {
+      document.documentElement.classList.add("dark")
+    }
 
     // Save to localStorage
     localStorage.setItem("allstar-theme", theme)

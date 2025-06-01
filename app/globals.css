@@ -121,7 +121,7 @@
   }
 
   /* Dark mode versions for each theme */
-  .dark.theme-default {
+  .dark .theme-default {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -143,7 +143,7 @@
     --ring: 263.4 70% 50.4%;
   }
 
-  .dark.theme-luxury {
+  .dark .theme-luxury {
     --background: 0 0% 10%;
     --foreground: 0 0% 98%;
     --card: 0 0% 10%;
@@ -165,7 +165,7 @@
     --ring: 45 100% 50%;
   }
 
-  .dark.theme-sport {
+  .dark .theme-sport {
     --background: 0 0% 10%;
     --foreground: 0 0% 98%;
     --card: 0 0% 10%;
@@ -187,7 +187,7 @@
     --ring: 0 90% 50%;
   }
 
-  .dark.theme-modern {
+  .dark .theme-modern {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
     --card: 222 47% 11%;
@@ -209,7 +209,7 @@
     --ring: 224 76% 48%;
   }
 
-  .dark.theme-eco {
+  .dark .theme-eco {
     --background: 20 14% 4%;
     --foreground: 0 0% 98%;
     --card: 20 14% 4%;

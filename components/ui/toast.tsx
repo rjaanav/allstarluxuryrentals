@@ -43,7 +43,7 @@ export function Toast({ id, message, type = "info", onClose }: ToastProps) {
   return (
     <div
       className={cn(
-        "fixed bottom-4 right-4 z-50 flex w-full max-w-md transform items-center rounded-lg p-4 shadow-lg transition-all duration-300 ease-in-out",
+        "fixed bottom-4 right-4 z-[100] flex w-full max-w-md transform items-center rounded-lg p-4 shadow-lg transition-all duration-300 ease-in-out",
         "bg-white dark:bg-gray-800",
         {
           success: "border-l-4 border-green-500",
@@ -89,7 +89,7 @@ export function ToastContainer({
   onClose: (id: string) => void
 }) {
   return (
-    <div className="fixed bottom-0 right-0 z-50 flex flex-col gap-2 p-4">
+    <div className="fixed bottom-0 right-0 z-[100] flex flex-col gap-2 p-4">
       {toasts.map((toast) => (
         <Toast key={toast.id} id={toast.id} message={toast.message} type={toast.type} onClose={onClose} />
       ))}

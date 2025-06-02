@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
+import { useToastContext } from "@/components/toast-provider"
 import { useSupabase } from "@/lib/supabase-provider"
 import { Loader2, Mail, Lock, User, AlertCircle } from "lucide-react"
 import { PasswordResetForm } from "@/components/password-reset-form"
@@ -28,7 +28,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
   const [error, setError] = useState<string | null>(null)
   const [showPasswordReset, setShowPasswordReset] = useState(false)
   const { supabase } = useSupabase()
-  const { toast } = useToast()
+  const { success } = useToastContext()
   const router = useRouter()
 
   const handleGoogleSignIn = async () => {
@@ -78,10 +78,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
 
       if (error) throw error
 
-      toast({
-        title: "Signed in successfully",
-        description: "Welcome back!",
-      })
+      success("Signed in successfully - Welcome back!")
 
       onClose()
       router.refresh()
@@ -119,13 +116,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
 
       if (error) throw error
 
-      toast({
-        title: "Sign up successful",
-        description: "Please check your email to confirm your account.",
-      })
+      success("Sign up successful - Please check your email to confirm your account.")
 
       // Switch to sign in tab after successful sign up
-      setTab("signin")
+      setTimeout(() => {
+        setTab("signin")
+      }, 1500)
     } catch (error: any) {
       console.error("Error signing up:", error)
       setError(error.message || "An error occurred during sign up")

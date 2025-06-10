@@ -6,7 +6,7 @@ import { useSupabase } from "@/lib/supabase-provider"
 import { useRouter } from "next/navigation"
 import { Loader2, LogOut } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
-import { useToast } from "@/hooks/use-toast"
+import { useToastContext } from "@/components/toast-provider"
 
 interface AuthButtonProps {
   className?: string
@@ -20,7 +20,7 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin")
   const router = useRouter()
-  const { toast } = useToast()
+  const { success, error: showError } = useToastContext()
 
   const handleSignOut = async () => {
     try {
@@ -29,19 +29,12 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
 
       if (error) throw error
 
-      toast({
-        title: "Signed out successfully",
-        description: "You have been signed out of your account.",
-      })
+      success("Signed out successfully")
 
       router.refresh()
     } catch (error: any) {
       console.error("Error signing out:", error)
-      toast({
-        title: "Error signing out",
-        description: error.message || "An error occurred while signing out",
-        variant: "destructive",
-      })
+      showError(error.message || "An error occurred while signing out")
     } finally {
       setIsLoading(false)
     }

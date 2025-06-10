@@ -71,12 +71,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         throw new Error("Email and password are required")
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        if (error.message?.toLowerCase().includes("email not confirmed")) {
+          setError("You still need to confirm your address – check your inbox or spam folder.")
+          return
+        }
+        throw error
+      }
 
       success("Signed in successfully - Welcome back!")
 
@@ -104,13 +110,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         throw new Error("Password must be at least 6 characters")
       }
 
-      const { error } = await supabase.auth.signUp({
+      // Get the current URL for the redirect
+      const origin =
+        typeof window !== "undefined" && window.location.hostname === "localhost"
+          ? window.location.origin
+          : process.env.NEXT_PUBLIC_SITE_URL || "https://allstarluxuryrentals-jaanavs-projects.vercel.app"
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            full_name: name,
-          },
+          data: { full_name: name },
+          emailRedirectTo: `${origin}/auth/callback`,
         },
       })
 

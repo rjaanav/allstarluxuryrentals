@@ -12,8 +12,8 @@ export function Footer() {
   }, [])
   return (
     <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Car className="h-6 w-6 text-primary" />
@@ -116,7 +116,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
+        <div className="border-t mt-8 md:mt-12 pt-6 md:pt-8 text-center text-sm text-muted-foreground">
           <p>© {currentYear} Allstar Luxury Car Rentals. All rights reserved.</p>
         </div>
       </div>

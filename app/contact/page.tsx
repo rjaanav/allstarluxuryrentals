@@ -38,8 +38,10 @@ export default function ContactPage() {
     message: "",
   })
   const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
@@ -47,12 +49,14 @@ export default function ContactPage() {
     }))
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
 
     // In a real app, we would submit to a server
     // For now, just show a success message
+    setSuccess(true)
+    setSuccessMessage('Your message has been sent!')
     setTimeout(() => {
       toast({
         title: "Message sent",
@@ -70,15 +74,17 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-32">
-      <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+    <div className="container mx-auto px-4 py-12 md:py-24 lg:py-32">
+      <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-8 md:mb-12">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">Contact Us</h1>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
           Have questions about our luxury car rentals? Our team is here to help you with any inquiries.
         </p>
       </motion.div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      {success && (
+        <div className="text-green-600 text-center font-semibold mb-4">{successMessage}</div>
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="lg:col-span-1 space-y-6">
           <motion.div variants={fadeIn}>
             <Card>
@@ -263,7 +269,7 @@ export default function ContactPage() {
             width="100%"
             height="100%"
             style={{ border: 0 }}
-            allowFullScreen=""
+            allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>

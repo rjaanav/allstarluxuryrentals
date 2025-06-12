@@ -146,16 +146,15 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-32">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+    <div className="container mx-auto px-4 py-12 md:py-24 lg:py-32">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start">
         {/* Car Image and Details */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl mb-6">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-xl mb-4 md:mb-6">
             <Image src={getCarImageUrl(car) || "/placeholder.svg"} alt={car.name} fill className="object-cover" />
           </div>
-
-          <h1 className="text-3xl font-bold mb-2">{car.name}</h1>
-          <div className="flex items-center mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{car.name}</h1>
+          <div className="flex items-center mb-2 md:mb-4">
             <div className="flex items-center mr-4">
               <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
               <span className="text-sm font-medium">4.8</span>
@@ -165,8 +164,7 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
               {car.brand} • {car.model} • {car.year}
             </span>
           </div>
-
-          <p className="text-muted-foreground mb-6">{car.description}</p>
+          <p className="text-base sm:text-lg text-muted-foreground mb-4 md:mb-6">{car.description}</p>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             {car.features && typeof car.features === "object" && (

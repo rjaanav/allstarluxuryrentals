@@ -75,18 +75,18 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+      <section className="relative pt-12 md:pt-32 pb-12 md:pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
         <div className="hero-pattern absolute inset-0 opacity-30"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <motion.div initial="hidden" animate="visible" variants={fadeIn} className="space-y-6">
               <Badge variant="outline" className="px-3 py-1 text-sm rounded-full border-primary/50">
                 DriveInStyle
               </Badge>
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold leading-tight">
                 Rent Your Dream Car <span className="gradient-text">Today</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-md">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-md">
                 Experience the thrill of driving the world's most luxurious cars. No commitments, just pure driving
                 pleasure.
               </p>
@@ -134,7 +134,7 @@ export default function Home() {
               transition={{ duration: 0.7, ease: "easeOut" }}
               className="relative"
             >
-              <div className="relative h-[300px] md:h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative h-40 sm:h-60 md:h-[300px] md:h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop"
                   alt="Luxury Car"
@@ -166,12 +166,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Rest of the component remains unchanged */}
       {/* Search Section */}
-      <section className="py-12 bg-muted/50">
+      <section className="py-8 md:py-12 bg-muted/50">
         <div className="container mx-auto px-4">
-          <div className="bg-background rounded-2xl shadow-lg p-6 md:p-8 max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Find Your Perfect Ride</h2>
+          <div className="bg-background rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Find Your Perfect Ride</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Location</label>
@@ -205,11 +204,11 @@ export default function Home() {
       </section>
 
       {/* Featured Cars Section */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Featured Vehicles</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Featured Vehicles</h2>
               <p className="text-muted-foreground">Explore our handpicked selection of luxury cars</p>
             </div>
             <Link href="/fleet" className="mt-4 md:mt-0 inline-flex items-center text-primary hover:underline">
@@ -218,7 +217,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {featuredCars.map((car) => (
               <motion.div key={car.id} whileHover={{ y: -10, transition: { duration: 0.2 } }}>
                 <Card className="overflow-hidden border-0 shadow-lg h-full">
@@ -263,16 +262,16 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-muted/30">
+      <section id="how-it-works" className="py-12 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+          <div className="text-center mb-8 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">How It Works</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Renting your dream car has never been easier. Follow these simple steps and hit the road in style.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 icon: <Car className="h-10 w-10 text-primary" />,
@@ -323,16 +322,16 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">What Our Customers Say</h2>
+          <div className="text-center mb-8 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">What Our Customers Say</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Don't just take our word for it. Here's what our customers have to say about their Allstar experience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 name: "Alex Johnson",
@@ -386,12 +385,12 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary/10">
+      <section className="py-12 md:py-20 bg-primary/10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Experience Luxury on Wheels?</h2>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">Ready to Experience Luxury on Wheels?</h2>
+              <p className="text-base sm:text-lg text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto">
                 Join thousands of satisfied customers who have experienced the thrill of driving their dream cars. Your
                 adventure awaits!
               </p>
@@ -411,9 +410,9 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 icon: <Shield className="h-8 w-8 text-primary" />,

@@ -134,14 +134,14 @@ const faqData = [
 
 export default function FAQPage() {
   return (
-    <div className="container mx-auto px-4 py-32">
+    <div className="container mx-auto px-4 py-12 md:py-24 lg:py-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-3xl"
       >
-        <h1 className="mb-12 text-center text-4xl font-bold">Frequently Asked Questions</h1>
+        <h1 className="mb-6 md:mb-12 text-center text-2xl sm:text-3xl md:text-4xl font-bold">Frequently Asked Questions</h1>
 
         {/* Display all FAQs grouped by category */}
         {faqData.map((category, categoryIndex) => (
@@ -162,8 +162,8 @@ export default function FAQPage() {
 
         {/* Contact Section */}
         <div className="mt-16 rounded-lg border border-gray-200 p-6 text-center dark:border-gray-700">
-          <h2 className="mb-4 text-xl font-semibold">Still have questions?</h2>
-          <p className="mb-6 text-muted-foreground">
+          <h2 className="mb-4 text-lg sm:text-xl md:text-2xl font-semibold">Still have questions?</h2>
+          <p className="mb-4 md:mb-6 text-muted-foreground">
             If you couldn't find the answer to your question, please feel free to contact our customer support team.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

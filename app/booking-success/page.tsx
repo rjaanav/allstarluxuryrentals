@@ -53,14 +53,21 @@ export default function BookingSuccessPage() {
     }
   }, [user, router])
 
-  const formatDate = (dateString) => {
-    const options = { weekday: "short", month: "short", day: "numeric", year: "numeric" }
-    return new Date(dateString).toLocaleDateString("en-US", options)
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString(undefined, {
+      weekday: "long" as const,
+      month: "long" as const,
+      day: "numeric" as const,
+      year: "numeric" as const,
+    });
   }
 
-  const formatTime = (dateString) => {
-    const options = { hour: "numeric", minute: "numeric", hour12: true }
-    return new Date(dateString).toLocaleTimeString("en-US", options)
+  function formatTime(dateString: string) {
+    return new Date(dateString).toLocaleTimeString(undefined, {
+      hour: "2-digit" as const,
+      minute: "2-digit" as const,
+      hour12: true,
+    });
   }
 
   if (!user) {
@@ -68,19 +75,19 @@ export default function BookingSuccessPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-32">
+    <div className="container mx-auto px-4 py-12 md:py-24 lg:py-32">
       <div className="max-w-3xl mx-auto">
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-12">
-          <div className="inline-block p-4 bg-green-100 dark:bg-green-900/20 rounded-full mb-6">
-            <CheckCircle className="h-16 w-16 text-green-500" />
+        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-8 md:mb-12">
+          <div className="inline-block p-4 bg-green-100 dark:bg-green-900/20 rounded-full mb-4 md:mb-6">
+            <CheckCircle className="h-10 w-10 md:h-16 md:w-16 text-green-500" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Booking Confirmed!</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">Booking Confirmed!</h1>
+          <p className="text-base sm:text-lg text-muted-foreground">
             Your luxury car rental has been successfully booked. We've sent a confirmation email with all the details.
           </p>
         </motion.div>
 
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="mb-12">
+        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="mb-8 md:mb-12">
           <Card>
             <CardContent className="p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">

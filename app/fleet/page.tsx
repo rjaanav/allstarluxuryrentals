@@ -37,7 +37,7 @@ const staggerContainer = {
 
 export default function FleetPage() {
   const { cars, loading, error, fetchCars, getCarCategories, getCarBrands } = useCars()
-  const { isMobile } = useMobile()
+  const isMobile = useMobile()
   const [filteredCars, setFilteredCars] = useState(cars)
   const [searchTerm, setSearchTerm] = useState("")
   const [priceRange, setPriceRange] = useState([0, 1500])
@@ -118,10 +118,10 @@ export default function FleetPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-32">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+    <div className="container mx-auto px-4 py-12 md:py-24 lg:py-32">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Our Luxury Fleet</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Our Luxury Fleet</h1>
           <p className="text-muted-foreground">Discover and book from our collection of premium vehicles</p>
         </div>
         {/* Only show the filters toggle button on mobile */}
@@ -151,9 +151,9 @@ export default function FleetPage() {
           transition={{ duration: 0.3 }}
           className="lg:block overflow-hidden"
         >
-          <div className="bg-background rounded-xl border p-6 sticky top-24">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Filters</h2>
+          <div className="bg-background rounded-xl border p-4 sm:p-6 sticky top-24">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold">Filters</h2>
               <Button variant="ghost" size="sm" onClick={resetFilters}>
                 Reset
               </Button>
@@ -274,21 +274,21 @@ export default function FleetPage() {
         {/* Cars Grid */}
         <div className="lg:col-span-3">
           {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="flex justify-center items-center h-40 md:h-64">
+              <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold mb-2">Error loading cars</h3>
+            <div className="text-center py-8 md:py-12">
+              <h3 className="text-lg md:text-xl font-semibold mb-2">Error loading cars</h3>
               <p className="text-muted-foreground">{error.message}</p>
               <Button variant="outline" className="mt-4" onClick={() => fetchCars()}>
                 Try Again
               </Button>
             </div>
           ) : filteredCars.length === 0 ? (
-            <div className="text-center py-12">
-              <Car className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No cars found</h3>
+            <div className="text-center py-8 md:py-12">
+              <Car className="h-12 w-12 md:h-16 md:w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg md:text-xl font-semibold mb-2">No cars found</h3>
               <p className="text-muted-foreground">Try adjusting your filters to find the perfect car.</p>
               <Button variant="outline" className="mt-4" onClick={resetFilters}>
                 Reset Filters
@@ -299,7 +299,7 @@ export default function FleetPage() {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6"
             >
               {filteredCars.map((car) => (
                 <motion.div key={car.id} variants={fadeIn} whileHover={{ y: -10, transition: { duration: 0.2 } }}>

@@ -27,14 +27,47 @@ import {
   Clock,
   Info,
 } from "lucide-react"
+import type { Car } from "@/types"
+import { useAuth } from "@/hooks/use-auth"
+import type { DateRange } from "react-day-picker"
+
+// Define the extra fields for the mockCar
+interface CarExtraFields {
+  gallery: string[]
+  description: string
+  features: {
+    seats: number
+    doors: number
+    transmission: string
+    range: string
+    power: string
+    acceleration: string
+    topSpeed: string
+    autopilot: boolean
+    chargingTime: string
+    engine?: string
+  }
+  included: string[]
+  rating: number
+  reviews: Array<{
+    id: number
+    user: string
+    avatar: string
+    rating: number
+    date: string
+    comment: string
+  }>
+  pickup_locations: string[]
+}
 
 export default function CarDetailsPage() {
   const params = useParams()
   const router = useRouter()
-  const { supabase, user, signIn } = useSupabase()
-  const [car, setCar] = useState(null)
+  const { supabase } = useSupabase()
+  const { user, signIn } = useAuth()
+  const [car, setCar] = useState<(Car & CarExtraFields) | null>(null)
   const [loading, setLoading] = useState(true)
-  const [dateRange, setDateRange] = useState({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(),
     to: new Date(new Date().setDate(new Date().getDate() + 3)),
   })
@@ -42,8 +75,8 @@ export default function CarDetailsPage() {
   const [totalPrice, setTotalPrice] = useState(0)
 
   // Mock car data for development
-  const mockCar = {
-    id: 1,
+  const mockCar: Car & CarExtraFields = {
+    id: "1",
     name: "Tesla Model S Plaid",
     brand: "Tesla",
     model: "Model S",
@@ -51,6 +84,9 @@ export default function CarDetailsPage() {
     daily_rate: 299,
     category: "Electric",
     image_url: "/placeholder.svg?height=500&width=800&text=Tesla+Model+S",
+    is_available: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     gallery: [
       "/placeholder.svg?height=300&width=500&text=Tesla+Front",
       "/placeholder.svg?height=300&width=500&text=Tesla+Side",
@@ -108,7 +144,6 @@ export default function CarDetailsPage() {
           "Great car with impressive technology. The only reason for 4 stars is that I had to spend some time figuring out all the features. Otherwise, fantastic experience.",
       },
     ],
-    is_available: true,
     pickup_locations: ["Downtown Luxury Center", "Airport Terminal 1", "Westside Premium Garage"],
   }
 
@@ -141,7 +176,7 @@ export default function CarDetailsPage() {
 
   useEffect(() => {
     if (car && dateRange.from && dateRange.to) {
-      const days = Math.ceil((dateRange.to - dateRange.from) / (1000 * 60 * 60 * 24))
+      const days = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24))
       setTotalDays(days)
       setTotalPrice(days * car.daily_rate)
     }
@@ -167,6 +202,11 @@ export default function CarDetailsPage() {
 
     // For now, just navigate to a success page
     router.push("/booking-success")
+  }
+
+  // Handler for Calendar onSelect
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    if (range) setDateRange(range)
   }
 
   if (loading) {
@@ -237,7 +277,7 @@ export default function CarDetailsPage() {
 
           {/* Gallery */}
           <div className="grid grid-cols-4 gap-4 mb-8">
-            {car.gallery.map((image, index) => (
+            {car.gallery.map((image: string, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -272,7 +312,7 @@ export default function CarDetailsPage() {
                 <div>
                   <h3 className="text-xl font-semibold mb-3">What's Included</h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {car.included.map((item, index) => (
+                    {car.included.map((item: string, index: number) => (
                       <li key={index} className="flex items-center">
                         <Check className="h-5 w-5 text-green-500 mr-2" />
                         <span>{item}</span>
@@ -284,7 +324,7 @@ export default function CarDetailsPage() {
                 <div>
                   <h3 className="text-xl font-semibold mb-3">Pickup Locations</h3>
                   <ul className="space-y-2">
-                    {car.pickup_locations.map((location, index) => (
+                    {car.pickup_locations.map((location: string, index: number) => (
                       <li key={index} className="flex items-center">
                         <MapPin className="h-5 w-5 text-primary mr-2" />
                         <span>{location}</span>
@@ -411,7 +451,7 @@ export default function CarDetailsPage() {
                 </div>
 
                 <div className="space-y-6">
-                  {car.reviews.map((review) => (
+                  {car.reviews.map((review: typeof mockCar.reviews[number], index: number) => (
                     <motion.div
                       key={review.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -482,7 +522,7 @@ export default function CarDetailsPage() {
                 <Calendar
                   mode="range"
                   selected={dateRange}
-                  onSelect={setDateRange}
+                  onSelect={handleDateRangeChange}
                   className="rounded-md border"
                   disabled={{ before: new Date() }}
                 />

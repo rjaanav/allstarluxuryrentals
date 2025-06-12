@@ -4,9 +4,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/lib/supabase-provider"
 import { useRouter } from "next/navigation"
-import { Loader2, LogOut } from "lucide-react"
+import { Loader2, LogOut, User } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
 import { useToastContext } from "@/components/toast-provider"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 interface AuthButtonProps {
   className?: string
@@ -53,10 +55,24 @@ export function AuthButton({ className, variant = "default" }: AuthButtonProps) 
 
   if (user) {
     return (
-      <Button variant={variant} size="sm" onClick={handleSignOut} disabled={isLoading} className={className}>
-        {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <LogOut className="h-4 w-4 mr-2" />}
-        Sign Out
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={variant} size="sm" className={className}>
+            <User className="h-4 w-4 mr-2" />
+            Account
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem asChild>
+            <Link href="/profile">Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleSignOut} disabled={isLoading}>
+            {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <LogOut className="h-4 w-4 mr-2" />}
+            Sign Out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
 

@@ -11,14 +11,12 @@ import { useToastContext } from "@/components/toast-provider"
 interface AuthButtonProps {
   className?: string
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
-  showSignUp?: boolean
 }
 
-export function AuthButton({ className, variant = "default", showSignUp = true }: AuthButtonProps) {
+export function AuthButton({ className, variant = "default" }: AuthButtonProps) {
   const { supabase, user, loading: authLoading } = useSupabase()
   const [isLoading, setIsLoading] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin")
   const router = useRouter()
   const { success, error: showError } = useToastContext()
 
@@ -40,13 +38,7 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
     }
   }
 
-  const openSignIn = () => {
-    setAuthModalTab("signin")
-    setShowAuthModal(true)
-  }
-
-  const openSignUp = () => {
-    setAuthModalTab("signup")
+  const openAuthModal = () => {
     setShowAuthModal(true)
   }
 
@@ -68,28 +60,12 @@ export function AuthButton({ className, variant = "default", showSignUp = true }
     )
   }
 
-  if (showSignUp) {
-    return (
-      <>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={openSignIn} className={className}>
-            Sign In
-          </Button>
-          <Button variant={variant} size="sm" onClick={openSignUp} className={className}>
-            Sign Up
-          </Button>
-        </div>
-        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab={authModalTab} />
-      </>
-    )
-  }
-
   return (
     <>
-      <Button variant={variant} size="sm" onClick={openSignIn} className={className}>
+      <Button variant={variant} size="sm" onClick={openAuthModal} className={className}>
         Sign In
       </Button>
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab={authModalTab} />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   )
 }

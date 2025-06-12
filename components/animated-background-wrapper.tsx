@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { BackgroundAnimation } from "./background-animation"
+import { NoSSR } from "./no-ssr"
 
 interface AnimatedBackgroundWrapperProps {
   children: ReactNode
@@ -11,7 +12,9 @@ interface AnimatedBackgroundWrapperProps {
 export function AnimatedBackgroundWrapper({ children, intensity = "medium" }: AnimatedBackgroundWrapperProps) {
   return (
     <>
-      <BackgroundAnimation variant="particles" intensity={intensity} />
+      <NoSSR>
+        <BackgroundAnimation variant="particles" intensity={intensity} />
+      </NoSSR>
       {children}
     </>
   )

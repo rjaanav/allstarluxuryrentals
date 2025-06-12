@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useRef } from "react"
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { Session, User } from "@supabase/supabase-js"
 
@@ -38,71 +38,99 @@ export default function SupabaseProvider({
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
+  const initializationRef = useRef<Promise<void> | null>(null)
 
-  // Handle hash fragment authentication (for OAuth redirects)
+  // Prevent hydration issues by only running auth logic on client
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Check if we have a hash fragment with an access token
-      const hasHashFragment = window.location.hash && window.location.hash.includes("access_token")
+    setIsClient(true)
+  }, [])
 
-      if (hasHashFragment) {
-        // Let Supabase handle the hash fragment
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session)
-          setUser(session?.user || null)
-
-          // Remove the hash fragment from the URL
-          window.history.replaceState(null, "", window.location.pathname + window.location.search)
-        })
+  useEffect(() => {
+    if (!isClient || !supabaseUrl || !supabaseAnonKey) {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        setLoading(false)
       }
-    }
-  }, [supabase])
-
-  useEffect(() => {
-    if (!supabaseUrl || !supabaseAnonKey) {
-      setLoading(false)
       return
     }
 
-    const getSession = async () => {
+    // Prevent multiple initializations
+    if (initializationRef.current) {
+      return
+    }
+
+    const initializeAuth = async () => {
       try {
         setLoading(true)
 
-        // Get the current session
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession()
+        // Handle hash fragment authentication (for OAuth redirects)
+        const hasHashFragment = window.location.hash && window.location.hash.includes("access_token")
+        
+        if (hasHashFragment) {
+          // Let Supabase handle the hash fragment
+          const { data: { session }, error } = await supabase.auth.getSession()
+          
+          if (error) {
+            console.error("Error handling hash fragment:", error)
+          } else {
+            setSession(session)
+            setUser(session?.user || null)
+          }
 
-        if (error) {
-          throw error
+          // Remove the hash fragment from the URL
+          window.history.replaceState(null, "", window.location.pathname + window.location.search)
+        } else {
+          // Get the current session normally
+          const { data: { session }, error } = await supabase.auth.getSession()
+
+          if (error) {
+            console.error("Error getting session:", error)
+          } else {
+            setSession(session)
+            setUser(session?.user || null)
+          }
         }
-
-        setSession(session)
-        setUser(session?.user || null)
       } catch (error) {
-        console.error("Error getting session:", error)
+        console.error("Error initializing auth:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    // Initial session fetch
-    getSession()
+    // Store the initialization promise
+    initializationRef.current = initializeAuth()
 
-    // Set up auth state change listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event)
-      setSession(session)
-      setUser(session?.user || null)
+    // Set up auth state change listener after initialization
+    const setupListener = async () => {
+      await initializationRef.current
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log("Auth state changed:", event)
+        setSession(session)
+        setUser(session?.user || null)
+        
+        // Only update loading state for sign out events
+        if (event === 'SIGNED_OUT') {
+          setLoading(false)
+        }
+      })
+
+      return subscription
+    }
+
+    let subscription: any = null
+    setupListener().then((sub) => {
+      subscription = sub
     })
 
     return () => {
-      subscription.unsubscribe()
+      if (subscription) {
+        subscription.unsubscribe()
+      }
     }
-  }, [supabase, supabaseAnonKey, supabaseUrl])
+  }, [isClient, supabase, supabaseAnonKey, supabaseUrl])
 
   return (
     <Context.Provider

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { useSupabase } from "@/lib/supabase-provider"
@@ -40,6 +40,7 @@ const fadeIn = {
 
 export default function ProfilePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, supabase } = useSupabase()
   const [isUpdating, setIsUpdating] = useState(false)
   const [profile, setProfile] = useState({
@@ -138,10 +139,11 @@ export default function ProfilePage() {
         }
       } catch (err) {
         console.error("Error in profile fetch:", err)
-        setError(err.message || "Failed to load profile data")
+        const errorMessage = err instanceof Error ? err.message : "Failed to load profile data"
+        setError(errorMessage)
         toast({
           title: "Error",
-          description: err.message || "Failed to load profile data. Please try again.",
+          description: errorMessage + ". Please try again.",
           variant: "destructive",
         })
       } finally {
@@ -221,7 +223,7 @@ export default function ProfilePage() {
     return valid
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setProfile((prev) => ({
       ...prev,
@@ -229,7 +231,7 @@ export default function ProfilePage() {
     }))
 
     // Clear error when field is edited
-    if (formErrors[name]) {
+    if (formErrors[name as keyof typeof formErrors]) {
       setFormErrors((prev) => ({
         ...prev,
         [name]: "",
@@ -237,7 +239,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
 
@@ -272,9 +274,10 @@ export default function ProfilePage() {
       })
     } catch (error) {
       console.error("Error updating profile:", error)
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile. Please try again."
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -282,7 +285,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleAvatarUpload = async (event) => {
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true)
 
@@ -326,9 +329,10 @@ export default function ProfilePage() {
       })
     } catch (error) {
       console.error("Error uploading avatar:", error)
+      const errorMessage = error instanceof Error ? error.message : "Failed to upload avatar. Please try again."
       toast({
         title: "Error",
-        description: error.message || "Failed to upload avatar. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -376,7 +380,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSessionTimeoutChange = (e) => {
+  const handleSessionTimeoutChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = Number.parseInt(e.target.value)
     setSessionTimeout(value)
 
@@ -461,7 +465,7 @@ export default function ProfilePage() {
         <h1 className="text-3xl font-bold mb-2">My Profile</h1>
         <p className="text-muted-foreground mb-8">Manage your personal information and preferences</p>
 
-        <Tabs defaultValue="personal" className="w-full">
+        <Tabs defaultValue={searchParams.get("tab") || "personal"} className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="personal">Personal Info</TabsTrigger>
             <TabsTrigger value="license">Driver's License</TabsTrigger>

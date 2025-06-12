@@ -28,17 +28,29 @@ const themes: ThemeOption[] = [
 
 export function ThemeSwitcher() {
   const [currentTheme, setCurrentTheme] = useState<string>("theme-default")
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Only access localStorage after client mount
+    if (!isMounted) return
+
     // Get saved theme from localStorage or use default
     const savedTheme = localStorage.getItem("allstar-theme") || "theme-default"
     setCurrentTheme(savedTheme)
     applyTheme(savedTheme)
-  }, [])
+  }, [isMounted])
 
   const applyTheme = (theme: string) => {
+    // Only apply to DOM if we're on the client
+    if (typeof window === "undefined") return
+
     // Remove all theme classes
-    document.body.classList.forEach((className) => {
+    const bodyClasses = Array.from(document.body.classList)
+    bodyClasses.forEach((className) => {
       if (className.startsWith("theme-")) {
         document.body.classList.remove(className)
       }
@@ -50,6 +62,16 @@ export function ThemeSwitcher() {
     // Save to localStorage
     localStorage.setItem("allstar-theme", theme)
     setCurrentTheme(theme)
+  }
+
+  // Don't render dropdown content during SSR to prevent hydration issues
+  if (!isMounted) {
+    return (
+      <Button variant="ghost" size="icon" className="rounded-full" disabled>
+        <Palette className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Change theme colors</span>
+      </Button>
+    )
   }
 
   return (

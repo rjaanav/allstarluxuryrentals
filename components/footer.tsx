@@ -1,7 +1,15 @@
+"use client"
+
 import Link from "next/link"
+import { useState, useEffect } from "react"
 import { Car, Instagram, Twitter, Facebook, Youtube } from "lucide-react"
 
 export function Footer() {
+  const [currentYear, setCurrentYear] = useState(2024) // Default fallback
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear())
+  }, [])
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto px-4 py-12">
@@ -109,7 +117,7 @@ export function Footer() {
         </div>
 
         <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Allstar Luxury Car Rentals. All rights reserved.</p>
+          <p>© {currentYear} Allstar Luxury Car Rentals. All rights reserved.</p>
         </div>
       </div>
     </footer>

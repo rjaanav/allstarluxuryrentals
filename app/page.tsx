@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useSupabase } from "@/lib/supabase-provider"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Calendar, Car, ChevronRight, MapPin, Shield, Star, Zap } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { AuthModal } from "@/components/auth-modal"
 
 // Animation variants
 const fadeIn = {
@@ -37,6 +39,7 @@ const featuredCars = [
     brand: "Porsche",
     category: "Sports",
     daily_rate: 899,
+    rating: 4.8,
     image: "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?w=800&h=500&fit=crop",
   },
   {
@@ -45,6 +48,7 @@ const featuredCars = [
     brand: "Lamborghini",
     category: "Supercar",
     daily_rate: 1299,
+    rating: 4.9,
     image: "https://images.unsplash.com/photo-1519245659620-e859806a8d3b?w=800&h=500&fit=crop",
   },
   {
@@ -53,12 +57,20 @@ const featuredCars = [
     brand: "Ferrari",
     category: "Supercar",
     daily_rate: 1199,
+    rating: 4.7,
     image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&h=500&fit=crop",
   },
 ]
 
 export default function Home() {
-  const { user, signIn } = useSupabase()
+  const { user } = useSupabase()
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   return (
     <>
@@ -230,7 +242,7 @@ export default function Home() {
                       </div>
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="ml-1 text-sm font-medium">{(Math.random() * (5 - 4.5) + 4.5).toFixed(1)}</span>
+                        <span className="ml-1 text-sm font-medium">{car.rating}</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center mt-4">
@@ -387,8 +399,8 @@ export default function Home() {
                 <Button size="lg" className="rounded-full" asChild>
                   <Link href="/fleet">Browse Fleet</Link>
                 </Button>
-                {!user && (
-                  <Button size="lg" variant="outline" className="rounded-full" onClick={() => signIn()}>
+                {isMounted && !user && (
+                  <Button size="lg" variant="outline" className="rounded-full" onClick={() => setShowAuthModal(true)}>
                     Sign Up Now
                   </Button>
                 )}
@@ -441,6 +453,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   )
 }

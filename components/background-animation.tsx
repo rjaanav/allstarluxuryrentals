@@ -16,10 +16,16 @@ export function BackgroundAnimation({
   className = "",
 }: BackgroundAnimationProps) {
   const { theme } = useTheme()
-  const { isMobile } = useMobile()
+  const isMobile = useMobile()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mounted, setMounted] = useState(false)
-  const isDark = theme === "dark"
+  const [isDark, setIsDark] = useState(false)
+
+  // Prevent hydration mismatch by only determining theme after mount
+  useEffect(() => {
+    setMounted(true)
+    setIsDark(theme === "dark")
+  }, [theme])
 
   // Brand colors that work in both light and dark modes
   const getBrandColors = () => {
@@ -142,10 +148,7 @@ export function BackgroundAnimation({
     }
   }, [mounted, intensity, isDark, isMobile])
 
-  // Set mounted state after component mounts
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  // Don't render during SSR to prevent hydration issues
 
   if (!mounted) return null
 

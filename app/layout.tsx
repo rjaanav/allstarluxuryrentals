@@ -27,7 +27,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <SupabaseProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider 
+            attribute="class" 
+            defaultTheme="system" 
+            enableSystem
+            disableTransitionOnChange
+          >
             <ToastProvider>
               <SessionManager />
               <AnimatedBackgroundWrapper intensity="medium">

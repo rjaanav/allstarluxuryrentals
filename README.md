@@ -7,7 +7,7 @@ A modern web application for a luxury car rental business built with Next.js, Su
 - User authentication with Google via Supabase
 - Browse and search luxury cars
 - Book cars for specific dates
-- Manage bookings and user profile
+- Manage bookings
 - Write and read reviews
 - View promotions and special offers
 - Responsive design for all devices
@@ -86,7 +86,7 @@ The application features:
 - User authentication with Google via Supabase
 - A comprehensive car browsing and filtering system
 - A booking system with date selection and availability checking
-- User profiles and booking management
+- Booking management
 - Reviews and ratings
 - Promotions and special offers
 - FAQ and support pages

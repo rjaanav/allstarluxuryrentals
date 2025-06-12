@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { AuthButton } from "@/components/auth-button"
-import { ProfileButton } from "@/components/profile-button"
 import { useMobile } from "@/hooks/use-mobile"
 import { useSupabase } from "@/lib/supabase-provider"
 import { ThemeSwitcher } from "@/components/theme-switcher"
@@ -46,7 +45,7 @@ export function Navbar() {
       return <div className="w-20 h-10" />
     }
 
-    return user ? <ProfileButton /> : <AuthButton />
+    return <AuthButton />
   }
 
   const renderMobileAuthSection = () => {
@@ -56,11 +55,7 @@ export function Navbar() {
 
     return (
       <div className="pt-2">
-        {user ? (
-          <ProfileButton className="w-full justify-start" />
-        ) : (
-          <AuthButton className="w-full" />
-        )}
+        <AuthButton className="w-full" />
       </div>
     )
   }

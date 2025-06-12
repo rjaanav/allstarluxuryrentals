@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
 
   try {
     // Define protected routes
-    const protectedRoutes = ["/profile", "/bookings", "/booking-success", "/reviews/add", "/admin"]
+    const protectedRoutes = ["/bookings", "/booking-success", "/reviews/add"]
 
     // Check if the current path is a protected route
     const isProtectedRoute = protectedRoutes.some((route) => req.nextUrl.pathname.startsWith(route))
@@ -38,5 +38,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/bookings/:path*", "/booking-success/:path*", "/reviews/add/:path*", "/admin/:path*"],
+  matcher: ["/bookings/:path*", "/booking-success/:path*", "/reviews/add/:path*"],
 }

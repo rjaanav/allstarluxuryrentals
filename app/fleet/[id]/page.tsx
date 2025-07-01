@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -16,7 +17,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ArrowRight, CalendarIcon, Check, Fuel, Gauge, Shield, Sliders, Star, Users, Zap } from "lucide-react"
 
-export default function CarDetailPage({ params }: { params: { id: string } }) {
+export default function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params)
   const { getCarById } = useCars()
   const { createBooking } = useBookings()
   const { user } = useAuth()
@@ -57,13 +59,21 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchCar = async () => {
       setLoading(true)
-      const carData = await getCarById(params.id)
-      setCar(carData)
-      setLoading(false)
+      
+      try {
+        const carData = await getCarById(id)
+        setCar(carData)
+      } catch (error) {
+        console.error("Error in fetchCar:", error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    fetchCar()
-  }, [params.id, getCarById])
+    if (id) {
+      fetchCar()
+    }
+  }, [id]) // Temporarily removed getCarById to test
 
   useEffect(() => {
     if (car && dateRange.from && dateRange.to) {

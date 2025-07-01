@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 import { useCars } from "@/hooks/use-cars"
 import { useBookings } from "@/hooks/use-bookings"
 import { useAuth } from "@/hooks/use-auth"
-import { useToast } from "@/hooks/use-toast"
+import { useToastContext } from "@/components/toast-provider"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent } from "@/components/ui/card"
@@ -20,7 +20,7 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
   const { getCarById } = useCars()
   const { createBooking } = useBookings()
   const { user } = useAuth()
-  const { toast } = useToast()
+  const { success, error: showError } = useToastContext()
   const router = useRouter()
 
   const [car, setCar] = useState<any>(null)
@@ -79,45 +79,30 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
 
   const handleBooking = async () => {
     if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to book a car.",
-        variant: "destructive",
-      })
+      showError("Please sign in to book a car.")
       return
     }
 
     if (!dateRange.from || !dateRange.to) {
-      toast({
-        title: "Date Selection Required",
-        description: "Please select both pickup and return dates.",
-        variant: "destructive",
-      })
+      showError("Please select both pickup and return dates.")
       return
     }
 
     try {
-      const booking = await createBooking({
-        car_id: car.id,
-        start_date: format(dateRange.from, "yyyy-MM-dd"),
-        end_date: format(dateRange.to, "yyyy-MM-dd"),
-        total_amount: total,
-      })
+      const booking = await createBooking(
+        car.id,
+        dateRange.from,
+        dateRange.to,
+        total
+      )
 
       if (booking) {
-        toast({
-          title: "Booking Successful",
-          description: "Your car has been booked successfully.",
-        })
+        success("Your car has been booked successfully.")
         router.push("/booking-success")
       }
     } catch (error) {
       console.error("Booking error:", error)
-      toast({
-        title: "Booking Failed",
-        description: "There was an error processing your booking. Please try again.",
-        variant: "destructive",
-      })
+      showError("There was an error processing your booking. Please try again.")
     }
   }
 
